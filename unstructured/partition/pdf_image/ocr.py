@@ -172,12 +172,13 @@ def process_file_with_ocr(
                 return DocumentLayout.from_pages(merged_page_layouts)
         else:
             with tempfile.TemporaryDirectory() as temp_dir:
-                _images = []
+                _image_paths = []
                 file = pymupdf.open(filename)
                 for page in file:
-                    pix = page.get_pixmap(dpi=200)
-                    img = Image.open(BytesIO(pix.tobytes("ppm")))
-                    _images.append(img)
+                    pix = page.get_pixmap(dpi=pdf_image_dpi)
+                    image_path = os.path.join(temp_dir, "page-%i.jpeg" % page.number)
+                    pix.save(image_path, output='jpeg')
+                    _image_paths.append(image_path)
 
                 # _image_paths = pdf2image.convert_from_path(
                 #     filename,
@@ -186,21 +187,22 @@ def process_file_with_ocr(
                 #     paths_only=True,
                 #     userpw=password or "",
                 # )
-                # image_paths = cast(List[str], _image_paths)
-                for i, image in enumerate(_images):
+                image_paths = cast(List[str], _image_paths)
+                for i, image_path in enumerate(image_paths):
                     extracted_regions = extracted_layout[i] if i < len(extracted_layout) else None
-                    merged_page_layout = supplement_page_layout_with_ocr(
-                        page_layout=out_layout.pages[i],
-                        image=image,
-                        infer_table_structure=infer_table_structure,
-                        ocr_agent=ocr_agent,
-                        ocr_languages=ocr_languages,
-                        ocr_mode=ocr_mode,
-                        extracted_regions=extracted_regions,
-                        ocr_layout_dumper=ocr_layout_dumper,
-                        table_ocr_agent=table_ocr_agent,
-                    )
-                    merged_page_layouts.append(merged_page_layout)
+                    with PILImage.open(image_path) as image:
+                        merged_page_layout = supplement_page_layout_with_ocr(
+                            page_layout=out_layout.pages[i],
+                            image=image,
+                            infer_table_structure=infer_table_structure,
+                            ocr_agent=ocr_agent,
+                            ocr_languages=ocr_languages,
+                            ocr_mode=ocr_mode,
+                            extracted_regions=extracted_regions,
+                            ocr_layout_dumper=ocr_layout_dumper,
+                            table_ocr_agent=table_ocr_agent,
+                        )
+                        merged_page_layouts.append(merged_page_layout)
                 return DocumentLayout.from_pages(merged_page_layouts)
     except Exception as e:
         if os.path.isdir(filename) or os.path.isfile(filename):
