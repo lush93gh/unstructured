@@ -142,6 +142,8 @@ pandas==2.3.2
     # via unstructured-inference
 pdf2image==1.17.0
     # via -r ./extra-pdf-image.in
+pymupdf==1.26.4
+    # via -r ./extra-pdf-image.in
 pdfminer-six==20250327
     # via
     #   -c ././deps/constraints.txt

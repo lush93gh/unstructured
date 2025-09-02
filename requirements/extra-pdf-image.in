@@ -4,6 +4,7 @@
 onnx>=1.17.0
 onnxruntime>=1.19.0
 pdf2image
+pymupdf
 pdfminer.six
 pikepdf
 pi_heif

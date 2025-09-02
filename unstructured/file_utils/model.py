@@ -358,7 +358,7 @@ class FileType(enum.Enum):
     PDF = (
         "pdf",
         "pdf",
-        ["pdf2image", "pdfminer", "PIL"],
+        ["pymupdf", "pdfminer", "PIL"],
         "pdf",
         [".pdf"],
         "application/pdf",
