@@ -173,12 +173,12 @@ def process_file_with_ocr(
         else:
             with tempfile.TemporaryDirectory() as temp_dir:
                 _image_paths = []
-                file = pymupdf.open(filename)
-                for page in file:
-                    pix = page.get_pixmap(dpi=pdf_image_dpi)
-                    image_path = os.path.join(temp_dir, "page-%i.jpeg" % page.number)
-                    pix.save(image_path, output='jpeg')
-                    _image_paths.append(image_path)
+                with pymupdf.open(filename) as doc:
+                    for page in doc:
+                        pix = page.get_pixmap(dpi=pdf_image_dpi)
+                        image_path = os.path.join(temp_dir, "page-%i.ppm" % page.number)
+                        pix.save(image_path, output='ppm')
+                        _image_paths.append(image_path)
 
                 # _image_paths = pdf2image.convert_from_path(
                 #     filename,
