@@ -179,20 +179,11 @@ def process_file_with_ocr(
                         image_path = os.path.join(temp_dir, "page-%i.ppm" % page.number)
                         pix.save(image_path, output='ppm')
                         _image_paths.append(image_path)
-                        print(image_path)
 
-                # _image_paths = pdf2image.convert_from_path(
-                #     filename,
-                #     dpi=pdf_image_dpi,
-                #     output_folder=temp_dir,
-                #     paths_only=True,
-                #     userpw=password or "",
-                # )
                 image_paths = cast(List[str], _image_paths)
                 for i, image_path in enumerate(image_paths):
                     extracted_regions = extracted_layout[i] if i < len(extracted_layout) else None
                     with PILImage.open(image_path) as image:
-                        print(type(image))
                         merged_page_layout = supplement_page_layout_with_ocr(
                             page_layout=out_layout.pages[i],
                             image=image,
